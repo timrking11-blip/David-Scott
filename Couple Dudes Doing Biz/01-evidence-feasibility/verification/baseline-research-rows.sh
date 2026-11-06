@@ -67,3 +67,13 @@ fi
 
 echo "wrote $BASE: $N research rows under $RULING"
 echo "  $DELTA"
+
+# G11: every changed or removed row's citations need a manual re-review, because a cell can keep citing a row that no
+# longer supports it (the E-SAGE-023 lesson of 2026-11-06). Print them now, while the ruling is being written.
+REVIEW="$(printf '%s %s' "$CHANGED" "$REMOVED" | xargs)"
+if [ -n "$REVIEW" ]; then
+  echo
+  echo "Re-review every citation below against the changed rows (verify.sh --impact):"
+  # shellcheck disable=SC2086
+  IMPACT_DIR="$(dirname "$LEDGER")" bash "$SCRIPT_DIR/verify.sh" --impact $REVIEW
+fi

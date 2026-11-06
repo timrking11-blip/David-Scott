@@ -25,6 +25,8 @@ Authority documents:
 | `verification/test-verify.sh` | Regression suite: mutation cases that prove each check FAILs when its rule is broken. A full run takes about 20 minutes. `ONLY="NC1 FX-07"` runs a subset and `JOBS` sets parallelism. |
 | `verification/research-rows.sha256` | Frozen-row baseline for check L-15 (G4): one sha256 per research row, 136 rows, with a history of rulings at the top. Never edit it by hand. |
 | `verification/baseline-research-rows.sh` | Re-baselines after a ruling changes a research row: `bash baseline-research-rows.sh "Ruling NN"`. Commit it together with the ledger edit. |
+| `verify.sh --impact E-...` | Lists every cell outside the ledger that cites a row (row and column), for re-review when its Claim changes (G11). `baseline-research-rows.sh` runs it automatically for changed rows. |
+| `verification/manual-checklist-review-2026-11-06.md`, `spot-check-2026-11-06b.md` | Evidence for the TEST-PLAN §6 sign-off, and the second source spot-check |
 | `verification/research-rows.lib.sh` | The one definition of "research row" and of the row hash, shared by verify.sh and the baseline script. |
 | `verification/TEST-PLAN.md` | Test strategy, coverage map, open gaps G1–G13, fixtures FX-01–16. Section 2 holds the single definition of "clean". |
 | `verification/spot-check-2026-11-06.md` | Source spot-check: 10 rows re-fetched. 8 confirmed, 2 partly confirmed; both have since been corrected. |
@@ -86,7 +88,7 @@ Authority documents:
   - ~~G4~~ **built** (Ruling 52): check L-15. Any edit to a research row now FAILs until it is re-baselined under a ruling.
   - ~~G5~~ **built** (Ruling 54): check P-06.
   - ~~G6~~ **built**: check F-05.
-  - ~~G1~~ (L-16) and ~~G12~~ (C-11) **built** (Ruling 55). Still open: **G11** (claim drifts away from its citation; an `--impact` report), plus G2, G3, G7 and G9 from TEST-PLAN §7. G13 was resolved by Ruling 46.
+  - ~~G1~~ (L-16), ~~G12~~ (C-11), ~~G2~~ (F-06), ~~G7~~ (A-09) and ~~G11~~ (`verify.sh --impact`) **built**; G3 and G9 were already covered; G13 was resolved by Ruling 46. **No TEST-PLAN gap is open.**
   - Fixtures FX-14 and FX-15 activate once L-15 and P-06 exist.
   - The manual checklist (TEST-PLAN §6) is **reviewed but not signed off**. Four items pass. Item 1 passes with one follow-up (E-AI-028's context qualifier). Items 2 and 3 need Timothy's call. See `verification/manual-checklist-review-2026-11-06.md`.
 

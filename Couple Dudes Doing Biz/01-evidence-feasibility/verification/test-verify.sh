@@ -242,6 +242,14 @@ add C11-SNIPPET; case_C11-SNIPPET() { # Supported citing only a snippet-only S1 
 add C11-S2POC; case_C11-S2POC() { # S2 plus a named PoC satisfies Rule 1
   local s2; s2=$(pick evidence-ledger.md "${LROW}"'uc($11)=="S2" && lc($13) !~ /snippet only/'); need "S2 row" "$s2" || return 1
   cellmod connectivity-matrix.md "Sage: CSV import/export" 3 set "Supported [$s2], to be proven by PoC SAGE-CSV" || return 1; MODE=nofail; EXPECT="C-11"; }
+# G7 (A-09): automation cells and poc-tests.md Path lines quote the connectivity verdicts
+add A09; case_A09() { sedi automation-feasibility-matrix.md 's/Viable with conditions (SAGE-SDK)/Recommended for PoC (SAGE-SDK)/' || return 1; EXPECT="A-09"; }
+add A09b; case_A09b() { # PoC-first pairing in a cell that also names SAGE-CSV
+  sedi automation-feasibility-matrix.md 's/SAGE-ODBC (Viable with conditions)/SAGE-ODBC (Recommended for PoC)/' || return 1; EXPECT="A-09"; }
+add A09-POC; case_A09-POC() { sedi poc-tests.md 's/^Path: Flow: email intake (matrix verdict: Viable with conditions)/Path: Flow: email intake (matrix verdict: Recommended for PoC)/' || return 1; EXPECT="A-09"; }
+# G2 (F-06): A-01 stays an assumption outside findings-summary.md
+add F06; case_F06() { sedi connectivity-matrix.md 's/reported as Quantum/Quantum/g' || return 1; EXPECT="F-06"; }
+add F06b; case_F06b() { sedi automation-feasibility-matrix.md '0,/reported as Quantum 2026/s/reported as Quantum 2026/Quantum 2026 confirmed/' || return 1; EXPECT="F-06"; }
 add L18a; case_L18a() { local id; id=$(pick evidence-ledger.md "${LROW}"'lc($6)=="verified"'); need "verified row" "$id" || return 1
   cellmod evidence-ledger.md "$id" 6 set "verifed" || return 1; EXPECT="L-18"; }
 add L18b; case_L18b() { local id; id=$(pick evidence-ledger.md "${LROW}"'uc($11)=="S1"'); need "S1 row" "$id" || return 1

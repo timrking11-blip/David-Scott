@@ -32,6 +32,38 @@ if ! awk --version 2>&1 | head -n 1 | grep -q '^GNU Awk'; then
   exit 2
 fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" || { echo "FAIL SETUP — cannot resolve the script directory"; exit 2; }
+# --impact ID... (G11): list every place in the drafts, other than the ledger itself, that cites these ledger rows, so
+# each can be re-reviewed when a row's Claim changes. Read-only; runs no checks. Table rows print the row label and the
+# column header of each cell that cites the ID. Exit 0 always (it is a report). Env IMPACT_DIR overrides ../drafts.
+if [ "${1:-}" = "--impact" ]; then
+  shift
+  [ "$#" -gt 0 ] || { echo "usage: bash verify.sh --impact E-SAGE-023 [E-...]"; exit 2; }
+  IDIR="${IMPACT_DIR:-$SCRIPT_DIR/../drafts}"
+  for id in "$@"; do
+    echo "== $id"
+    found=0
+    for f in "$IDIR"/*.md; do
+      [ "$(basename "$f")" = evidence-ledger.md ] && continue
+      out="$(tr -d '\r' < "$f" | awk -v ID="$id" -v FN="$(basename "$f")" '
+        function cites(s,   r) { r = "(^|[^A-Z0-9-])" ID "([^0-9]|$)"; return s ~ r }
+        /^\|/ { if (!intab) { intab=1; hdr=$0; next } }
+        !/^\|/ { intab=0 }
+        intab && $0 ~ /^\|[ :-]+\|/ { next }
+        cites($0) {
+          if (intab) {
+            n=split($0, c, "|"); split(hdr, h, "|"); cols=""
+            for (i=3; i<n; i++) if (cites(c[i])) { x=h[i]; gsub(/^ +| +$/,"",x); cols=cols (cols==""?"":", ") x }
+            lab=c[2]; gsub(/^ +| +$/,"",lab)
+            print "  " FN ":" NR ": row \"" substr(lab,1,70) "\", column " (cols==""?"(row label)":cols)
+          } else print "  " FN ":" NR ": " substr($0,1,110)
+        }')"
+      [ -n "$out" ] && { printf '%s\n' "$out"; found=1; }
+    done
+    [ "$found" -eq 1 ] || echo "  (no citation outside the ledger)"
+  done
+  exit 0
+fi
+
 DIR="${1:-$SCRIPT_DIR/../drafts}"
 if [ ! -d "$DIR" ]; then
   echo "FAIL SETUP — directory not found: $DIR"
@@ -434,6 +466,41 @@ else
   check A-07 "the file contains the exact reorder-formula text"
 
   cited_check A-08 "$AUTO"
+
+  # A-09 (G7): automation cells must not rate a PoC's path better (or differently) than the connectivity matrix does.
+  # The PoC-to-path map is read from poc-tests.md ("## POC-0n — NAME" then "Path: <label> (matrix verdict: <V>)"),
+  # and each Path line's quoted verdict must itself match the matrix. In automation cells only tight pairings count,
+  # because one cell can name several PoCs: "<Verdict> (<POC>", "<Verdict>, <POC>" and "<POC> (<Verdict>".
+  if [ "$HAVE_CONN" -eq 1 ] && [ -f "$POC" ]; then
+    awkto "$T/a09.conn" -F'|' -v X="$CONN_NF" "$TRIM"'NR>2 && NF==X {print t($2) "\t" t($11)}' "$T/conn.table"
+    awkto "$T/a09.map" "$TRIM"'/^## POC-0[1-7] — /{p=$4; next} p!="" && /^Path: /{ s=n($0); sub(/^Path: /,"",s); v=s; sub(/ \(matrix verdict: .*$/,"",s); if (v ~ /\(matrix verdict: /) { sub(/^.*\(matrix verdict: /,"",v); sub(/\).*$/,"",v) } else v=""; print p "\t" s "\t" v; p="" }' "$POC"
+    awkto "$OFF" -v CV="$T/a09.conn" -v MP="$T/a09.map" "$TRIM"'
+      function vof(s,   i) { for (i=1; i<=5; i++) if (index(s, V[i]) == 1) return V[i]; return "" }
+      BEGIN {
+        split("Recommended for PoC|Viable with conditions|Fallback only|Not viable|Unresolved", V, "|")
+        FS="\t"
+        while ((getline l < CV) > 0) { split(l, a, "\t"); cv[a[1]]=vof(a[2]) }
+        while ((getline l < MP) > 0) { split(l, a, "\t"); path[a[1]]=a[2]
+          if (!(a[2] in cv)) print "poc-tests.md: " a[1] " Path \"" a[2] "\" is not a connectivity-matrix path label"
+          else if (a[3] != "" && vof(a[3]) != cv[a[2]]) print "poc-tests.md: " a[1] " quotes matrix verdict \"" a[3] "\" for " a[2] ", the matrix says " cv[a[2]] }
+        FS="|"
+      }
+      NR>2 && NF>2 {
+        for (c=3; c<NF; c++) {
+          s=n($c)
+          for (pn in path) {
+            want=cv[path[pn]]
+            for (i=1; i<=5; i++) {
+              if (index(s, V[i] " (" pn) || index(s, V[i] ", " pn) || index(s, pn " (" V[i]))
+                if (V[i] != want) print "automation row \"" t($2) "\" pairs " pn " with \"" V[i] "\", but its path (" path[pn] ") is " want " in the connectivity matrix"
+            }
+          }
+        }
+      }' "$T/auto.table"
+    check A-09 "automation cells pair each PoC with its path's connectivity verdict, and poc-tests.md quotes those verdicts correctly (G7)"
+  else
+    emit SKIP A-09 "connectivity matrix or poc-tests.md missing, PoC pairings not checked"
+  fi
 fi
 
 # ================================================================ VENDOR QUESTIONS (V-)
@@ -586,6 +653,18 @@ else
         for (tk in pr) { q=s; while ((k=index(q, tk " (P")) > 0) { q=substr(q, k+length(tk)+2); g=substr(q,1,2); if (g != pr[tk]) print "line " FNR ": " tk " (" g "), the matrix gives " pr[tk] } }
       }' "$FIND"
     check F-05 "the summary's verdict counts, verdict lists and inline verdicts and priorities match the two matrices (G6)"
+
+    # F-06 (G2): assumption A-01 is not presented as fact outside findings-summary.md (Ruling 34). Both matrices and the
+    # workflow summary must not say the edition is confirmed or known, and each matrix keeps the "reported as Quantum" hedge.
+    for f in "$CONN" "$AUTO" "$WORK"; do
+      [ -f "$f" ] || continue
+      awkto "$T/f06.hits" "$TRIM"'{ l=tolower(n($0)); if (l ~ /confirmed as quantum|edition (is |now )?known|quantum( accounting)? 2026 (is )?confirmed|known to (run|be) quantum/) print FILENAME ":" FNR ": " substr($0,1,120) }' "$f"
+      sed 's#^.*/##' "$T/f06.hits" >> "$OFF"
+    done
+    for f in "$CONN" "$AUTO"; do
+      grepq -F -- "reported as Quantum" "$f" || echo "$(basename "$f"): the A-01 hedge \"reported as Quantum\" is missing" >> "$OFF"
+    done
+    check F-06 "A-01 stays an assumption in the matrices and the workflow summary: no \"confirmed\"/\"known\" edition wording, and each matrix says \"reported as Quantum\" (G2)"
   else
     emit SKIP F-05 "a matrix table is missing, the summary was not compared"
   fi
