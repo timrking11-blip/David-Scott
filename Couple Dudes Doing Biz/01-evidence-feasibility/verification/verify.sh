@@ -263,6 +263,17 @@ else
   done
   check L-14 "all 18 question IDs appear (D1.Q1-5, D2.Q1-5, D3.Q1-2, D4.Q1-4, MAIL.Q1-2)"
 
+  # L-16 (G1): spec 11.1 - an unknown or hypothesis row must say how it gets validated. An empty cell, or a
+  # placeholder such as none / n/a / - / TBD, does not count.
+  awkto "$OFF" -F'|' "$TRIM"'lc($6) ~ /^(unknown|hypothesis)$/ && lc($14) ~ /^(|none|n\/a|na|-|tbd|tba)$/ {print t($2) ": status " t($6) " but Validation needed is \"" t($14) "\""}' "$R"
+  check L-16 "every unknown or hypothesis row has a real Validation needed entry (spec 11.1, G1)"
+  # INFO only: stakeholder-reported rows "always need validation" (ledger header) but are outside spec 11.1. Listed for
+  # Timothy; never counted as PASS or FAIL.
+  awkto "$T/l16sr" -F'|' "$TRIM"'lc($6)=="stakeholder-reported" && lc($14) ~ /^(|none|n\/a|na|-|tbd|tba)$/ {print t($2)}' "$R"
+  if [ -s "$T/l16sr" ]; then
+    emit INFO L-16sr "MANUAL-REVIEW: $(wc -l < "$T/l16sr") stakeholder-reported rows have no Validation needed entry: $(paste -sd' ' "$T/l16sr")"
+  fi
+
   # L-18: controlled vocabularies (plan, "Ledger row format"). Case-insensitive equality; offenders reported as written.
   awkto "$OFF" -F'|' "$TRIM"'
     BEGIN {
@@ -363,6 +374,23 @@ else
   check C-09 "the UI automation row's verdict is Fallback only, Not viable or Unresolved"
 
   cited_check C-10 "$CONN"
+
+  # C-11 (G12): spec section 6 Rule 1 - a "Supported" evidence cell cites at least one S1 row, or an S2 row plus a named
+  # PoC (one of the seven frozen PoC names). Snippet-only rows count as S4 (Ruling 10), so they never qualify.
+  if [ "$HAVE_LEDGER" -eq 1 ]; then
+    awkto "$T/c11.str" -F'|' "$TRIM"'{s=uc($11); if (lc($13) ~ /snippet only/) s="S4"; print t($2) "\t" s}' "$R"
+    awkto "$OFF" -F'|' -v X="$CONN_NF" -v SF="$T/c11.str" "$TRIM"'
+      BEGIN { while ((getline l < SF) > 0) { split(l, a, "\t"); st[a[1]]=a[2] } }
+      NR>2 && NF==X && $3 ~ /^ *Supported([^A-Za-z]|$)/ {
+        c=$3; s1=0; s2=0; ids=""
+        while (match(c, /E-[A-Z]+-[0-9]+/)) { id=substr(c,RSTART,RLENGTH); c=substr(c,RSTART+RLENGTH); ids=ids " " id " (" ((id in st) ? st[id] : "?") ")"; if (st[id]=="S1") s1=1; if (st[id]=="S2") s2=1 }
+        poc = ($3 ~ /SAGE-CSV|SAGE-SDK|SAGE-ODBC|SHIP-PORTAL|SHIP-MULTI|MAIL-INTAKE|SAGE-TRACKING/)
+        if (!s1 && !(s2 && poc)) print t($2) ": Supported, but cites" (ids=="" ? " no ID" : ids) " - needs an S1 row, or an S2 row plus a named PoC"
+      }' "$T/conn.table"
+    check C-11 "every Supported evidence cell cites S1, or S2 plus a named PoC (spec Rule 1, G12)"
+  else
+    emit SKIP C-11 "ledger unavailable, evidence strength not checked"
+  fi
 fi
 
 # ================================================================ AUTOMATION MATRIX (A-)

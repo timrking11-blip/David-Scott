@@ -226,6 +226,22 @@ add L11; case_L11() { local id; id=$(pick evidence-ledger.md "${LROW}"'lc($6)=="
 add L13; case_L13() { local id; id=$(pick evidence-ledger.md "${LROW}"'lc($4) ~ /supergrok/ && $12 ~ /A-02/'); need "SuperGrok row with A-02" "$id" || return 1
   cellmod evidence-ledger.md "$id" 12 set "none" || return 1; EXPECT="L-13"; }
 add L14; case_L14() { sedi evidence-ledger.md 's/MAIL\.Q2//g' || return 1; EXPECT="L-14"; }
+add L16; case_L16() { # G1: a hypothesis row with Validation needed emptied
+  local id; id=$(pick evidence-ledger.md "${LROW}"'lc($6)=="hypothesis"'); need "hypothesis row" "$id" || return 1
+  cellmod evidence-ledger.md "$id" 14 set "" || return 1; EXPECT="L-16"; }
+add L16b; case_L16b() { # G1: an unknown row with a placeholder in Validation needed
+  local id; id=$(pick evidence-ledger.md "${LROW}"'lc($6)=="unknown"'); need "unknown row" "$id" || return 1
+  cellmod evidence-ledger.md "$id" 14 set "TBD" || return 1; EXPECT="L-16"; }
+# G12 (C-11): spec Rule 1 on the Sage CSV row, the one Recommended-for-PoC path
+add C11; case_C11() { # Supported citing only an S2 row and no PoC name
+  local s2; s2=$(pick evidence-ledger.md "${LROW}"'uc($11)=="S2"'); need "S2 row" "$s2" || return 1
+  cellmod connectivity-matrix.md "Sage: CSV import/export" 3 set "Supported [$s2]" || return 1; EXPECT="C-11"; }
+add C11-SNIPPET; case_C11-SNIPPET() { # Supported citing only a snippet-only S1 row (counts as S4)
+  local sn; sn=$(pick evidence-ledger.md "${LROW}"'uc($11)=="S1" && lc($13) ~ /snippet only/'); need "snippet-only S1 row" "$sn" || return 1
+  cellmod connectivity-matrix.md "Sage: CSV import/export" 3 set "Supported [$sn]" || return 1; EXPECT="C-11"; }
+add C11-S2POC; case_C11-S2POC() { # S2 plus a named PoC satisfies Rule 1
+  local s2; s2=$(pick evidence-ledger.md "${LROW}"'uc($11)=="S2" && lc($13) !~ /snippet only/'); need "S2 row" "$s2" || return 1
+  cellmod connectivity-matrix.md "Sage: CSV import/export" 3 set "Supported [$s2], to be proven by PoC SAGE-CSV" || return 1; MODE=nofail; EXPECT="C-11"; }
 add L18a; case_L18a() { local id; id=$(pick evidence-ledger.md "${LROW}"'lc($6)=="verified"'); need "verified row" "$id" || return 1
   cellmod evidence-ledger.md "$id" 6 set "verifed" || return 1; EXPECT="L-18"; }
 add L18b; case_L18b() { local id; id=$(pick evidence-ledger.md "${LROW}"'uc($11)=="S1"'); need "S1 row" "$id" || return 1
@@ -402,7 +418,7 @@ eval_baseline_s01() {
   elif [ "$((drawn + 2))" -ne "$total" ] || [ "$total" -ne "$rows" ] || [ "$fixed" -ne 2 ]; then bad BASELINE-S01 "stated total $total, K $drawn, $rows rows printed, $fixed marked fixed (need total = K+2 = rows, 2 fixed)"
   elif ! echo "$line" | grep -q 'SEED=suite-seed'; then bad BASELINE-S01 "SEED not printed"
   elif grep -qE '^PASS (S-01|P-05) ' "$BASE_OUT"; then bad BASELINE-S01 "S-01 or P-05 counted as PASS"
-  elif ! grep -qE '^Totals: [0-9]+ PASS, [0-9]+ FAIL, [0-9]+ SKIP, 2 INFO$' "$BASE_OUT"; then bad BASELINE-S01 "Totals line does not show 2 INFO"
+  elif ! grep -qE "^Totals: [0-9]+ PASS, [0-9]+ FAIL, [0-9]+ SKIP, $(grep -c '^INFO ' "$BASE_OUT") INFO\$" "$BASE_OUT" || ! grep -q '^INFO P-05 ' "$BASE_OUT"; then bad BASELINE-S01 "Totals INFO count differs from the INFO lines printed, or P-05 is not INFO"
   else ok BASELINE-S01 "INFO S-01: $total rows = $drawn drawn + 2 fixed, SEED printed, P-05 and S-01 counted as INFO"; fi
 }
 
