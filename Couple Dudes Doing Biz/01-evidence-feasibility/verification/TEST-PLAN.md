@@ -1,6 +1,6 @@
 # Test plan: sub-project 1 evidence package
 
-**What is tested:** the seven deliverables in `../drafts/` (the evidence ledger, two matrices, vendor questions, PoC tests, the findings summary, and the workflow summary, which is not yet built), plus `verify.sh`.
+**What is tested:** the seven deliverables in `../drafts/` (the evidence ledger, two matrices, vendor questions, PoC tests, the findings summary, and the workflow summary, built under Task 11, Ruling 53), plus `verify.sh`.
 
 **Authority:** spec §6, §7, §11, §12 and §15, the rulings in the controller ledger, and the plan's Step 1 checks.
 
@@ -27,11 +27,11 @@ Revised 2026-11-06 after L2 audit (test-plan-audit.md).
 ## 2. Coverage targets and the definition of clean
 
 - **Spec §11:** 8 of 8 criteria map to at least one test (§3).
-- **Fixtures:** about 17 of the 44 checks have a fixture today (§5). Target now: at least one fixture per check family (L, C, A, V, P, F, S). Target before Copilot or anyone else edits the drafts: every check has a fixture.
+- **Fixtures:** about 17 of the 44 checks had a fixture when this plan was written; since Ruling 56 every check has one (§5). Target now: at least one fixture per check family (L, C, A, V, P, F, S). Target before Copilot or anyone else edits the drafts: every check has a fixture.
 - **Spot-check:** 20% of verified S1 rows (minimum 5), drawn at random, plus the forced IDs E-SAGE-007 and E-AI-053. All must confirm.
 - **Definition of clean (single source; §6 and §7 refer here):**
   1. 0 FAIL.
-  2. A SKIP is allowed only for a file that does not exist yet (today, W-* for workflow-summary.md).
+  2. A SKIP is allowed only for a file that does not exist yet (since Task 11, Ruling 53, no deliverable is missing, so no SKIP is allowed).
   3. Every fixture in §5 fails its named check (`test-verify.sh` once G8 exists).
   4. Every spot-checked source confirms its claim.
   5. Every check P-05 line is a prohibition, a gate, a criterion or information, not a step.
