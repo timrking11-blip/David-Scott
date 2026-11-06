@@ -286,6 +286,14 @@ add P07; case_P07() { sedi poc-tests.md '$ a\Depends on E-SAGE-999.' || return 1
 add F01; case_F01() { sedi findings-summary.md 's/^## Handoffs/## Hand-offs/' || return 1; EXPECT="F-01"; }
 add F04; case_F04() { sedi findings-summary.md '$ a\Cites E-SAGE-999.' || return 1; EXPECT="F-04"; }
 add F04b; case_F04b() { sedi findings-summary.md '$ a\Cites E-SAGE-0071 (four digits).' || return 1; EXPECT="F-04"; }
+# G6 (F-05): the summary quotes the matrices; each case breaks one kind of quote.
+add F05-COUNT; case_F05-COUNT() { sedi findings-summary.md 's/Nine are Viable with conditions/Eight are Viable with conditions/' || return 1; EXPECT="F-05"; }
+add F05-TOTAL; case_F05-TOTAL() { sedi findings-summary.md 's/Of the 14 connectivity paths/Of the 13 connectivity paths/' || return 1; EXPECT="F-05"; }
+add F05-LIST; case_F05-LIST() { sedi findings-summary.md 's/Shipping: Unishippers API, //' || return 1; EXPECT="F-05"; }
+add F05-INLINE; case_F05-INLINE() { sedi findings-summary.md 's/Flow: tracking back to Sage (Unresolved)/Flow: tracking back to Sage (Viable with conditions)/' || return 1; EXPECT="F-05"; }
+add F05-PRIO; case_F05-PRIO() { sedi findings-summary.md 's/Tracking retrieval and Sage update (P3)/Tracking retrieval and Sage update (P2)/' || return 1; EXPECT="F-05"; }
+add F05-STALE; case_F05-STALE() { # the matrix changes and the summary is not updated: the memo would quote stale numbers
+  cellmod connectivity-matrix.md "Flow: tracking back to Sage" 11 set "Viable with conditions" || return 1; EXPECT="F-05"; }
 add X00; case_X00() { rm -f "$W/poc-tests.md" || return 1; EXPECT="X-00 P-00"; }
 add W05; case_W05() { # workflow-summary.md present: its checks activate and the banned wording is caught (NBSP included)
   { echo "Assessment view — not an approved v1 design (Stage B)"; echo; for h in "Current workflow" "Assessed workflow" "Where customer data lives" "Low-cost options" "Open questions"; do echo "## $h"; echo; done; printf 'The tool is not\xc2\xa0supported.\n'; } > "$W/workflow-summary.md" || return 1

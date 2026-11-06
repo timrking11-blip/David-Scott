@@ -514,6 +514,53 @@ else
   check F-03 "the A-01 qualifier \"confirmed by stakeholder report 2026-11-06 (E-SAGE-053)\" is present"
 
   cited_check F-04 "$FIND"
+
+  # F-05 (G6): the summary quotes the matrices correctly. Three tests, all against the live matrices:
+  #  (1) "Of the N connectivity paths" equals the matrix row count, and each "<count> is/are <Verdict>" equals the
+  #      number of paths with that verdict; (2) the sentence after each count names exactly those paths;
+  #  (3) every inline "<Path label> (<Verdict>" and "<Task> (P<n>" anywhere in the summary agrees with the matrices.
+  if [ "$HAVE_CONN" -eq 1 ] && [ "$HAVE_AUTO" -eq 1 ]; then
+    awkto "$T/f05.conn" -F'|' -v X="$CONN_NF" "$TRIM"'NR>2 && NF==X {print t($2) "\t" t($11)}' "$T/conn.table"
+    awkto "$T/f05.auto" -F'|' -v X="$AUTO_NF" "$TRIM"'NR>2 && NF==X {print t($2) "\t" t($12)}' "$T/auto.table"
+    awkto "$OFF" -v CV="$T/f05.conn" -v AP="$T/f05.auto" "$TRIM"'
+      function vof(s,   i) { for (i=1; i<=5; i++) if (index(s, V[i]) == 1) return V[i]; return "" }
+      function num(w) { w=tolower(w); return (w ~ /^[0-9]+$/) ? w+0 : ((w in NW) ? NW[w] : -1) }
+      BEGIN {
+        split("Recommended for PoC|Viable with conditions|Fallback only|Not viable|Unresolved", V, "|")
+        split("one two three four five six seven eight nine ten eleven twelve thirteen fourteen", a, " "); for (i in a) NW[a[i]]=i+0; NW["no"]=0; NW["none"]=0
+        FS="\t"
+        while ((getline l < CV) > 0) { split(l, b, "\t"); v=vof(b[2]); cv[b[1]]=v; cnt[v]++; np++ }
+        while ((getline l < AP) > 0) { split(l, b, "\t"); pr[b[1]]=b[2] }
+        FS=" "
+      }
+      /^## Where the evidence stands/ { sec=1; next }
+      /^## / { sec=0 }
+      sec && /connectivity paths/ && !done {
+        done=1; s=n($0)
+        if (match(s, /Of the [0-9a-z]+ connectivity paths/)) { m=substr(s,RSTART,RLENGTH); split(m, w, " "); if (num(w[3]) != np) print "line " FNR ": says " w[3] " connectivity paths, the matrix has " np }
+        else print "line " FNR ": no \"Of the N connectivity paths\" phrase"
+        ns=split(s, sent, /\. /)
+        for (i=1; i<=5; i++) {
+          v=V[i]; found=0
+          for (j=1; j<=ns; j++) {
+            if (match(sent[j], "(^|[^A-Za-z])([A-Za-z0-9]+) (is|are) " v)) {
+              found=1; cw=sent[j]; sub(" (is|are) " v ".*$", "", cw); sub(/^.*[^A-Za-z0-9]/, "", cw)
+              if (num(cw) != cnt[v]+0) print "line " FNR ": says " cw " " v ", the matrix has " cnt[v]+0
+              for (p in cv) { inlist=index(sent[j], p) > 0; if (cv[p]==v && !inlist) print "line " FNR ": " v " list omits " p; if (cv[p]!=v && inlist) print "line " FNR ": " v " list names " p ", which the matrix rates " cv[p] }
+            }
+          }
+          if (!found && cnt[v] > 0) print "line " FNR ": no count is given for " v " (the matrix has " cnt[v] ")"
+        }
+      }
+      {
+        s=n($0)
+        for (p in cv) { q=s; while ((k=index(q, p " (")) > 0) { q=substr(q, k+length(p)+2); v=vof(q); if (v != "" && v != cv[p]) print "line " FNR ": " p " (" v "), the matrix rates it " cv[p] } }
+        for (tk in pr) { q=s; while ((k=index(q, tk " (P")) > 0) { q=substr(q, k+length(tk)+2); g=substr(q,1,2); if (g != pr[tk]) print "line " FNR ": " tk " (" g "), the matrix gives " pr[tk] } }
+      }' "$FIND"
+    check F-05 "the summary's verdict counts, verdict lists and inline verdicts and priorities match the two matrices (G6)"
+  else
+    emit SKIP F-05 "a matrix table is missing, the summary was not compared"
+  fi
 fi
 
 # ================================================================ WORKFLOW SUMMARY (W-)
