@@ -4,7 +4,7 @@
 
 **Authority:** spec §6, §7, §11, §12 and §15, the rulings in the controller ledger, and the plan's Step 1 checks.
 
-**Status at 2026-11-06 02:30 ET:** `verify.sh` reports 45 PASS, 0 FAIL, 1 SKIP, exit 0. The SKIP is W-* (Task 11 is not built yet). The source spot-check and the code review of `verify.sh` are still in progress.
+**Status at 2026-11-06, after G4 (Ruling 52):** `verify.sh` reports 56 PASS, 0 FAIL, 1 SKIP, 2 INFO, exit 0. The SKIP is W-* (Task 11 is not built yet). `test-verify.sh` full run: 86 OK, 0 BAD, 1 SKIP (FX-15 waits for P-06). The spot-check and the code review of `verify.sh` are done. Still open for "clean" (§2): G5, G6, G1, G12, and the manual checklist (§6).
 
 Revised 2026-11-06 after L2 audit (test-plan-audit.md).
 
@@ -56,7 +56,7 @@ This table is ranked by harm if the gap stays open. §7 is ranked by build order
 
 | # | Gap | Risk | Proposed test | Type |
 |---|---|---|---|---|
-| **G4** | **Frozen research rows.** Nothing detects an edit to a research row, which the rules allow only via a ruling. This is the highest risk once Copilot starts editing. | Evidence silently altered | Store a baseline `sha256` of each research row (Source type ≠ analyst inference or stakeholder) in `verification/`. New check L-15 diffs the current rows against it and lists every changed ID. **Update path:** when a ruling changes a row, re-baseline in the same change and record the ruling ID with it, so the listed IDs can be matched to rulings. | Integration |
+| **G4** | **Frozen research rows.** Nothing detects an edit to a research row, which the rules allow only via a ruling. This is the highest risk once Copilot starts editing. | Evidence silently altered | Store a baseline `sha256` of each research row (Source type ≠ analyst inference or stakeholder) in `verification/`. New check L-15 diffs the current rows against it and lists every changed ID. **Update path:** when a ruling changes a row, re-baseline in the same change and record the ruling ID with it, so the listed IDs can be matched to rulings. **Built 2026-11-06 (Ruling 52):** check L-15, baseline `research-rows.sha256` (136 rows), re-baseline with `baseline-research-rows.sh "<ruling>"`, shared definition in `research-rows.lib.sh`. Also FAILs on a research row retyped to stakeholder or inference, and on a research row with no baseline. | Integration |
 | **G5** | **Live-system and cost gates** (Rulings 38 and 39). Check P-05 only lists the lines; it cannot prove a gate exists. | A PoC touches Brad's live account or incurs a charge | New check P-06 tests two things separately and case-insensitively, per PoC section whose steps match P-05's keyword list plus `endpoint`, `credentials` and `\blabel\b` (word-bounded, so "labelled" does not match): (a) a gate statement (`cost gate\|account gate\|Gate \(Rulings`); (b) a `gate not met` fail criterion. | Unit |
 | **G6** | **Summary against matrices.** The verdict counts and priorities quoted in findings-summary.md are checked only by hand. | Brad's memo quotes stale numbers | New check F-05: count the verdict strings in connectivity-matrix.md and compare them with the counts stated in the summary; compare the P1, P2 and P3 task lists. | Integration |
 | **G7** | **Automation against connectivity.** Nothing scripts whether "Recommended approach" in the automation matrix matches the connectivity verdicts. | A task rated better than its path allows | New check A-09. Needs the PoC-to-path map below. For each PoC name in an automation cell, evaluate it separately: if the cell calls that PoC's path "Recommended for PoC", the connectivity Verdict for the mapped path must say it too. Several PoC names can share a cell (automation rows 5 and 7 pair SAGE-CSV with SAGE-ODBC or SAGE-SDK), so never match the verdict string to the whole cell. | Integration |
@@ -102,7 +102,7 @@ Each fixture copies `../drafts` to a temporary directory, applies one `sed` chan
 | FX-11 | Rename `POC-03 — SAGE-ODBC` to `POC-03 — SAGE-READ` | FAIL check P-02 |
 | FX-12 | Replace the assumption A-01 qualifier with "CONFIRMED" using a global replace (the qualifier is on 2 lines of findings-summary.md, and check F-03 fails only if both change) | FAIL checks F-02 and F-03 |
 | FX-13 | Delete the "Resolves: E-SAGE-007" reference from vendor-questions.md (E-SAGE-007 appears once, at line 17). Check V-01 looks for ledger E- IDs, not question IDs, and the file has no "Ask Sage:" text | FAIL check V-01 |
-| FX-14 (after G4) | Change one word in a research row's Claim | FAIL check L-15 |
+| FX-14 | Change one word in a research row's Claim (also L15-RETYPE, L15-NEW; L15-SR-EXEMPT must not FAIL) | FAIL check L-15 |
 | FX-15 (after G5) | Delete both cost-gate sentences from POC-06 (lines 183 and 190); the "Gate not met" line at 206 stays, so only the gate-statement test fails | FAIL check P-06 |
 | FX-16 | Clean run with CRLF line endings | All PASS (CR stripped) |
 
@@ -123,8 +123,8 @@ Sign-off is part of "clean" (§2).
 
 This is build order, not the risk order of §4. G8 comes second because it guards every other check: a new check without a fixture can fail silently. G4 comes with it because it must exist before anyone edits the drafts. G7 has a high risk rank but a dependency (the PoC-to-path map), so it follows the cheaper checks.
 
-1. Finish the check S-01 spot-check and the `verify.sh` review, both in progress.
-2. Build **G4** (frozen-row baseline) and **G8** (`test-verify.sh` covering fixtures FX-01 to FX-13 and FX-16, which needs no new check) **before** anyone, Copilot included, edits the drafts.
+1. Finish the check S-01 spot-check and the `verify.sh` review. **Done 2026-11-06.**
+2. **Done 2026-11-06 (G4 under Ruling 52; G8 is `test-verify.sh`).** Build **G4** (frozen-row baseline) and **G8** (`test-verify.sh` covering fixtures FX-01 to FX-13 and FX-16, which needs no new check) **before** anyone, Copilot included, edits the drafts.
 3. Add G5, G6 and G1, then G12, G13, G2, G3, G7 and G9.
 4. Build Task 11. W-* then runs automatically.
 5. Re-run everything. Clean is defined in §2.

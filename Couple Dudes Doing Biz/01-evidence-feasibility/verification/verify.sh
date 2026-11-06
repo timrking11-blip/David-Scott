@@ -17,8 +17,9 @@
 #
 # Check-ID map (families): X setup, L ledger, C connectivity matrix, A automation matrix,
 #   V vendor questions, P PoC tests, F findings summary, W workflow summary, S spot-check.
-#   Reserved by TEST-PLAN.md and deliberately unused here: L-15 (G4), L-16 (G1), L-17 (G13),
+#   Reserved by TEST-PLAN.md and deliberately unused here: L-16 (G1), L-17 (G13),
 #   P-06 (G5), F-05 (G6), F-06 (G2), A-09 (G7), C-11 (G12).
+#   L-15 (G4) compares research rows with research-rows.sha256 in this folder (see baseline-research-rows.sh).
 #
 # Ledger column map (split on '|'; NF==17 for a 15-column row):
 #   $2 ID  $3 Domain  $4 Claim  $5 Claim type  $6 Status  $7 Source  $8 Source type  $9 Applies to
@@ -301,6 +302,25 @@ else
 
   awkto "$OFF" -F'|' "$TRIM"'t($3)=="MAIL" && !ex($8) && t($4) !~ /^If (Microsoft 365|M365|Google Workspace)/ {print t($2) ": MAIL claim is not written as a conditional (\"" substr(t($4),1,50) "\")"}' "$R"
   check L-26 "Task 4: every MAIL claim starts \"If Microsoft 365\"/\"If M365\"/\"If Google Workspace\" (research rows)"
+
+  # L-15 (G4): frozen research rows. Research rows may change only through a ruling, which re-baselines in the same
+  # change (baseline-research-rows.sh). Row definition and hash live in research-rows.lib.sh, shared with that script.
+  # FAILs on: a changed row; a baselined row that is gone or no longer a research row (e.g. its Source type was
+  # retyped to stakeholder, which would also exempt it from Ruling 51 checks); a research row with no baseline.
+  BASEF="$SCRIPT_DIR/research-rows.sha256"
+  if [ ! -f "$BASEF" ]; then
+    echo "baseline missing: $BASEF (run: bash baseline-research-rows.sh \"<ruling>\")" >> "$OFF"
+  elif ! . "$SCRIPT_DIR/research-rows.lib.sh" 2> "$T/rr.err" || ! research_hashes "$LEDGER" > "$T/rr.now" 2>> "$T/rr.err" || [ -s "$T/rr.err" ]; then
+    echo "CHECK ERROR: research-row hashing failed: $(head -c 200 "$T/rr.err" | tr '\n' ' ')" >> "$OFF"
+  else
+    grep -v '^#' "$BASEF" | csort > "$T/rr.base"
+    cut -d' ' -f1 "$T/rr.base" > "$T/rr.base.ids"
+    cut -d' ' -f1 "$T/rr.now" > "$T/rr.now.ids"
+    LC_ALL=C join "$T/rr.base" "$T/rr.now" | awk '$2!=$3 {print $1 ": research row changed since the baseline (needs a ruling, then a re-baseline)"}' >> "$OFF"
+    ccomm -23 "$T/rr.base.ids" "$T/rr.now.ids" | sed 's/$/: baselined research row is missing, or is no longer a research row (Source type changed?)/' >> "$OFF"
+    ccomm -13 "$T/rr.base.ids" "$T/rr.now.ids" | sed 's/$/: research row has no baseline (new row: needs a ruling, then a re-baseline)/' >> "$OFF"
+  fi
+  check L-15 "frozen research rows: every research row matches research-rows.sha256 (G4)"
 fi
 
 # ================================================================ CONNECTIVITY MATRIX (C-)

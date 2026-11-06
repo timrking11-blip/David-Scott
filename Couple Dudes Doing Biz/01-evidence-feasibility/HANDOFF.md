@@ -1,6 +1,6 @@
 # Handoff: Couple Dudes Doing Biz, sub-project 1 (evidence and feasibility)
 
-Last updated 2026-11-06. Read this first when you resume, whether in a new session or yourself.
+Last updated 2026-11-06 (cloud session, after G4). Read this first when you resume, whether in a new session or yourself.
 
 ## What this is
 
@@ -23,6 +23,9 @@ Authority documents:
 | `drafts/` | **Canonical** draft deliverables (Ruling 43): `evidence-ledger.md` (185+ rows), `connectivity-matrix.md`, `automation-feasibility-matrix.md`, `vendor-questions.md` (98 drafts, none sent), `poc-tests.md` (POC-01–07), `findings-summary.md`, `sources-*.md` |
 | `verification/verify.sh` | Mechanical checker. Run `bash verify.sh` from that folder. `SEED=n` gives a reproducible spot-check sample. |
 | `verification/test-verify.sh` | Regression suite: mutation cases that prove each check FAILs when its rule is broken. A full run takes about 20 minutes. `ONLY="NC1 FX-07"` runs a subset and `JOBS` sets parallelism. |
+| `verification/research-rows.sha256` | Frozen-row baseline for check L-15 (G4): one sha256 per research row, 136 rows, with a history of rulings at the top. Never edit it by hand. |
+| `verification/baseline-research-rows.sh` | Re-baselines after a ruling changes a research row: `bash baseline-research-rows.sh "Ruling NN"`. Commit it together with the ledger edit. |
+| `verification/research-rows.lib.sh` | The one definition of "research row" and of the row hash, shared by verify.sh and the baseline script. |
 | `verification/TEST-PLAN.md` | Test strategy, coverage map, open gaps G1–G13, fixtures FX-01–16. Section 2 holds the single definition of "clean". |
 | `verification/spot-check-2026-11-06.md` | Source spot-check: 10 rows re-fetched. 8 confirmed, 2 partly confirmed; both have since been corrected. |
 | `verification/*review*.md`, `*audit*.md` | Reviews: verify.sh (rated 7/10 before the fixes), the test plan, and the quote amendment |
@@ -80,7 +83,7 @@ Authority documents:
   - Test plan: revised.
   - Quote amendment: 7 of 7 addressed, plus a round-2 cleanup.
 - **Still open before the work counts as "clean"** (TEST-PLAN §2):
-  - **G4:** frozen-row baseline check (L-15). This is the highest priority before anyone edits the drafts again.
+  - ~~G4~~ **built** (Ruling 52): check L-15. Any edit to a research row now FAILs until it is re-baselined under a ruling.
   - **G5:** gate presence check (P-06).
   - **G6:** summary consistent with the matrices (F-05).
   - **G1** (L-16), **G11** (claim drifts away from its citation; an `--impact` report), **G12** (C-11) and **G13**, which was resolved by Ruling 46.
@@ -98,8 +101,8 @@ Authority documents:
 
 ## Next steps, in order
 
-1. Read the **final totals** at the bottom of this file. Confirm 0 FAIL, and that test-verify.sh has 0 BAD.
-2. Build **G4 (L-15)** before any further edits to the drafts.
+1. ~~Read the final totals and confirm 0 FAIL, 0 BAD.~~ Done 2026-11-06 (see the bottom of this file).
+2. ~~Build G4 (L-15).~~ Done 2026-11-06 (Ruling 52). From now on, a research-row edit needs a ruling and `baseline-research-rows.sh` in the same commit.
 3. Build Task 11 (`workflow-summary.md`), then re-run verify.sh so the W-* checks run.
 4. Build G5, G6, G1 and G12. Sign off the manual checklist.
 5. Task 10: present the drafts to Timothy. Promote them to this folder only on his explicit go.
@@ -109,8 +112,14 @@ Authority documents:
 
 - **Usage limits.** Opus and Sonnet subagents each hit the 5-hour limit during this work; it resets at about 6am ET. A stopped agent keeps its work, so resume it rather than restart it.
 - **The recoup-catalogs plugin's Stop hook** blocked every turn end. Timothy patched its prompt; the patch takes effect from the next session. If blocking returns after a plugin update, disable that plugin for this project.
-- **Not a git repository.** The before-copies in `verification/` serve as the change record.
+- **Now in git** (private repo `David-Scott`, path `Couple Dudes Doing Biz/`), worked from a cloud session since 2026-11-06. Git history is the change record from here; the older before-copies in `verification/` stay as they are. Pull before working and push after, so the local copy and the cloud copy cannot drift.
+- **GNU awk is required.** A fresh Linux container may lack it: `apt-get install -y gawk`.
 
 ## Final totals (filled in at the end of the 2026-11-06 run)
 
-_Pending: Ruling 51 scope fix and a full test-verify.sh run._
+| Run | Where | verify.sh | test-verify.sh (full, single run) |
+|---|---|---|---|
+| After the Ruling 51 scope fix | Timothy's PC, and again in the cloud session | 55 PASS, 0 FAIL, 1 SKIP, 2 INFO | 82 OK, 0 BAD, 2 SKIP (FX-14, FX-15) |
+| After G4 (Ruling 52) | Cloud session | 56 PASS, 0 FAIL, 1 SKIP, 2 INFO | 86 OK, 0 BAD, 1 SKIP (FX-15 waits for P-06) |
+
+The verify.sh SKIP is W-* (Task 11 is not built yet). The INFO lines are the P-05 manual-review list and the S-01 spot-check sample. Reproduce the sample with `SEED=handoff-2026-11-06 bash verify.sh`.

@@ -296,3 +296,16 @@ Workspace: this draft folder (no git repo). Briefs in briefs/, reports in report
   - The plan's Task 9 instruction to run the Task 1-8 checks on the merged ledger predates SR and inference rows. This is a check-scope correction, not a weakening: research rows are still caught (new test RESEARCH-STILL-CAUGHT).
   - Cost if wrong: inference rows carry a looser explicit scope. Mitigated by G11 (claim drift) and manual review.
 - Dispatched the scope change plus a full test-verify.sh run (sonnet). In parallel, the controller writes HANDOFF.md and saves memory (Timothy asked to store info and compact after this run).
+
+## 2026-11-06 cloud session (Timothy: "this session" carries on; work tracked in git, repo David-Scott)
+
+- Folder moved into git (private repo `David-Scott`, path `Couple Dudes Doing Biz/`). From here git history is the change record; the before-copies stay as they are.
+- Step 1 re-run from a clean checkout on Linux (GNU awk 5.2.1): verify.sh 55 PASS / 0 FAIL / 1 SKIP / 2 INFO; test-verify.sh full single run 82 OK / 0 BAD / 2 SKIP. Matches Timothy's local audit.
+- Ruling 52: G4 is built as check L-15 against a sha256 baseline of every research row, and the first baseline is taken from the drafts as they stand, because they pass every script check and both independent runs agree.
+  - A research row is the Ruling 51 definition: Source type is not stakeholder or analyst inference. 136 rows qualify. The definition and the hash live once, in `research-rows.lib.sh`, which both verify.sh and `baseline-research-rows.sh` use.
+  - L-15 FAILs on three things: a changed row; a baselined row that is gone or no longer a research row (retyping a row to stakeholder would otherwise escape both the freeze and the Ruling 51 checks); a research row with no baseline.
+  - The hash covers the whole row after CR is stripped, so a whitespace-only edit also FAILs. That is deliberate: re-baselining is cheap and every change gets a ruling.
+  - Update path: edit the row under a ruling, run `bash baseline-research-rows.sh "Ruling NN"` in the same change, commit both. The script records the date, ruling, row count and changed IDs in the baseline's history.
+  - Stakeholder and inference rows are not frozen. Their drift is G11's job (claim drifting from its citation), still open.
+  - Cost if wrong: the baseline freezes any undetected error in today's research rows; the S-01 spot-check and G11 remain the guard against that.
+- test-verify.sh: FX-14 is now a real case, plus L15-RETYPE, L15-NEW and L15-SR-EXEMPT (a stakeholder edit must not trip L-15). The two display issues from the local audit are fixed: the baseline line prints "none", and the totals print results and cases separately (BASELINE gives two results).

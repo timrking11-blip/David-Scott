@@ -22,7 +22,7 @@
 #
 # Fixture map (TEST-PLAN.md section 5): FX-01..FX-05, FX-07..FX-13, FX-16 are cases below under those names.
 #   FX-06 is the same mutation as NC13 (delete one side of a Conflicts-with pair), so it is run once, as NC13.
-#   FX-14 (needs L-15) and FX-15 (needs P-06) are reported SKIP: those checks are not built yet.
+#   FX-14 tests L-15 (G4), with L15-RETYPE, L15-NEW and L15-SR-EXEMPT. FX-15 (needs P-06) is reported SKIP: not built yet.
 
 V="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" || exit 2
 D="$V/../drafts"
@@ -184,7 +184,19 @@ add FX-13; case_FX-13() { # remove a ledger ID that V-01 requires from vendor-qu
     "$REAL_AWK" -F'|' "$ST"'NF==17 && t($2)=="'"$c"'" && lc($14) ~ /(^|[^a-z])ask([^a-z]|$)|vendor|confirm with/ {f=1} END{exit !f}' "$W/evidence-ledger.md" && grep -qF -- "$c" "$W/vendor-questions.md" && { id="$c"; break; }
   done; need "ledger row named in vendor-questions.md" "$id" || return 1
   sedi vendor-questions.md "s/$id//g" || return 1; EXPECT="V-01"; }
-add FX-14; case_FX-14() { MODE=skip; EXPECT="L-15 (frozen research rows) is not built yet"; }
+RROW="${LROW}"'lc($8) !~ /^(stakeholder|analyst inference)$/'   # research row (research-rows.lib.sh, Ruling 51)
+add FX-14; case_FX-14() { # G4: change one word in a research row's Claim
+  local id; id=$(pick evidence-ledger.md "$RROW"); need "research row" "$id" || return 1
+  cellmod evidence-ledger.md "$id" 4 sub '[A-Za-z]+' 'Altered' || return 1; EXPECT="L-15"; }
+add L15-RETYPE; case_L15-RETYPE() { # G4: a research row retyped as stakeholder escapes the freeze and Ruling 51 checks
+  local id; id=$(pick evidence-ledger.md "$RROW"); need "research row" "$id" || return 1
+  cellmod evidence-ledger.md "$id" 8 set "stakeholder" || return 1; EXPECT="L-15"; }
+add L15-NEW; case_L15-NEW() { # G4: a new research row with no baseline (copy of the last research row under a fresh ID)
+  local n; n=$("$REAL_AWK" -F'|' "$ST"'NF==17 && t($2) ~ /^E-/ && lc($8) !~ /^(stakeholder|analyst inference)$/ {n=NR} END{print n}' "$W/evidence-ledger.md"); need "last research row" "$n" || return 1
+  sedi evidence-ledger.md "${n}{p;s/| *E-[A-Z]*-[0-9]* *|/| E-ZZZ-999 |/}" || return 1; EXPECT="L-15"; }
+add L15-SR-EXEMPT; case_L15-SR-EXEMPT() { # G4: editing a stakeholder row is not a frozen-row change
+  local id; id=$(pick evidence-ledger.md "${LROW}"'lc($8)=="stakeholder"'); need "stakeholder row" "$id" || return 1
+  cellmod evidence-ledger.md "$id" 13 append " Reconfirm with Brad." || return 1; MODE=nofail; EXPECT="L-15"; }
 add FX-15; case_FX-15() { MODE=skip; EXPECT="P-06 (live-system and cost gates) is not built yet"; }
 add FX-16; case_FX-16() { # clean run with CRLF line endings must look exactly like the baseline
   local f; for f in "$W"/*.md; do cp "$f" "$W/.pre"; sed -i 's/$/\r/' "$f"; cmp -s "$W/.pre" "$f" && { fail_setup "CRLF edit did not change $f"; return 1; }; done
@@ -346,7 +358,7 @@ eval_baseline() {
   elif [ -n "$unexpected" ]; then bad BASELINE "unexpected FAIL on the untouched drafts:$unexpected (a script defect or a new draft defect)"
   elif grep -q 'CHECK ERROR' "$BASE_OUT"; then bad BASELINE "CHECK ERROR in the baseline output"
   elif ! grep -q '^Totals: ' "$BASE_OUT"; then bad BASELINE "no Totals line"
-  else ok BASELINE "exit $rc; FAILs are only known draft issues: $(tr '\n' ' ' < "$BASE_IDS" | sed 's/ $//' | sed 's/^$/none/')"; fi
+  else local ids; ids="$(tr '\n' ' ' < "$BASE_IDS" | sed 's/ $//')"; ok BASELINE "exit $rc; FAILs are only known draft issues: ${ids:-none}"; fi
 }
 # S-01 count consistency and INFO accounting, on the baseline output
 eval_baseline_s01() {
@@ -416,7 +428,7 @@ eval_case() {
 for name in "${CASES[@]}"; do eval_case "$name"; done
 
 echo
-printf 'Totals: %s OK, %s BAD, %s SKIP (cases: %s; jobs: %s)\n' "$OK_N" "$BAD_N" "$SKIP_N" "${#CASES[@]}" "$JOBS"
+printf 'Totals: %s OK, %s BAD, %s SKIP (results: %s from %s cases, BASELINE gives two; jobs: %s)\n' "$OK_N" "$BAD_N" "$SKIP_N" "$((OK_N + BAD_N + SKIP_N))" "${#CASES[@]}" "$JOBS"
 [ "$BAD_N" -eq 0 ] || { echo "RESULT: at least one case is BAD - verify.sh has a hole or a check regressed"; exit 1; }
 echo "RESULT: every mutation was caught"
 exit 0
