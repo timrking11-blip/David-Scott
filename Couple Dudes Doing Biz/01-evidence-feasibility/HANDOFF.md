@@ -14,7 +14,7 @@ Authority documents:
 
 - Spec: [`../docs/specs/2026-11-04-evidence-feasibility-design.md`](../docs/specs/2026-11-04-evidence-feasibility-design.md). §15 lists the amendments DEC-06 to DEC-11.
 - Plan: [`../docs/plans/2026-11-04-evidence-feasibility.md`](../docs/plans/2026-11-04-evidence-feasibility.md), with Tasks 1–11.
-- Rulings: [`verification/controller-ledger.md`](verification/controller-ledger.md). Every judgment call made on Timothy's behalf is there (Rulings 1–51), each with the reason and the cost if wrong.
+- Rulings: [`verification/controller-ledger.md`](verification/controller-ledger.md). Every judgment call made on Timothy's behalf is there (Rulings 1–56; the number 42 was never used, see `verification/audit-cloud-2026-11-06.md`), each with the reason and the cost if wrong.
 
 ## Where things are
 

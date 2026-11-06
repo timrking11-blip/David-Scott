@@ -17,8 +17,8 @@
 #
 # Check-ID map (families): X setup, L ledger, C connectivity matrix, A automation matrix,
 #   V vendor questions, P PoC tests, F findings summary, W workflow summary, S spot-check.
-#   Reserved by TEST-PLAN.md and deliberately unused here: L-16 (G1), L-17 (G13),
-#   P-06 (G5), F-05 (G6), F-06 (G2), A-09 (G7), C-11 (G12).
+#   Reserved by TEST-PLAN.md and deliberately unused here: L-17 (G13, resolved by Ruling 46 without a check).
+#   Built from TEST-PLAN gaps: L-15 (G4), L-16 (G1), P-06 (G5), F-05 (G6), F-06 (G2), A-09 (G7), C-11 (G12).
 #   L-15 (G4) compares research rows with research-rows.sha256 in this folder (see baseline-research-rows.sh).
 #
 # Ledger column map (split on '|'; NF==17 for a 15-column row):
