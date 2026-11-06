@@ -518,6 +518,43 @@ else
 
   banned_phrases "$WORK"
   check W-05 "banned phrasing is absent (any case, NBSP/tab folded)"
+
+  # W-06 / W-07: plan Task 11 Step 3, "every verdict and priority must match the two matrices exactly".
+  # W-06: every "<Verdict> [<Path label>]" pair in the summary matches that path's Verdict in connectivity-matrix.md.
+  if [ "$HAVE_CONN" -eq 1 ]; then
+    awkto "$T/conn.verdicts" -F'|' -v X="$CONN_NF" "$TRIM"'NR>2 && NF==X {v=t($11); sub(/[^A-Za-z].*$/,"",v); p=t($2); print p "\t" t($11)}' "$T/conn.table"
+    awkto "$OFF" -v CV="$T/conn.verdicts" "$TRIM"'
+      BEGIN { FS="\t"; while ((getline l < CV) > 0) { split(l, a, "\t"); cv[a[1]]=a[2] } FS=" " }
+      {
+        s=$0
+        while (match(s, /(Recommended for PoC|Viable with conditions|Fallback only|Not viable|Unresolved) \[[^]]+\]/)) {
+          m=substr(s, RSTART, RLENGTH); s=substr(s, RSTART+RLENGTH)
+          v=m; sub(/ \[.*$/,"",v); p=m; sub(/^[^[]*\[/,"",p); sub(/\]$/,"",p)
+          if (!(p in cv)) { if (p ~ /^(Sage|Shipping|Flow): /) print "line " FNR ": [" p "] is not a connectivity-matrix path label" }
+          else if (index(cv[p], v) != 1) print "line " FNR ": says " v " for [" p "], the matrix says " substr(cv[p],1,40)
+        }
+      }' "$WORK"
+    check W-06 "every \"Verdict [Path]\" pair matches the connectivity matrix's verdict for that path"
+  else
+    emit SKIP W-06 "connectivity-matrix.md has no table, verdicts not compared"
+  fi
+  # W-07: every Assessed-workflow row (first cell = an automation-matrix Task, optionally followed by " (step ...)")
+  # carries that task's Priority in its fifth column, and every automation-matrix task has a row.
+  if [ "$HAVE_AUTO" -eq 1 ]; then
+    awkto "$T/auto.prio" -F'|' -v X="$AUTO_NF" "$TRIM"'NR>2 && NF==X {print t($2) "\t" t($12)}' "$T/auto.table"
+    awkto "$OFF" -v AP="$T/auto.prio" "$TRIM"'
+      BEGIN { FS="\t"; while ((getline l < AP) > 0) { split(l, a, "\t"); pr[a[1]]=a[2] } FS="|" }
+      /^## / { sec=($0 ~ /^## Assessed workflow/) }
+      sec && NF>=8 && t($2) !~ /^(Step|-+)$/ {
+        k=t($2); sub(/ \(steps? [^)]*\)$/,"",k)
+        if (!(k in pr)) print "line " FNR ": Assessed-workflow step \"" k "\" is not an automation-matrix task"
+        else { seen[k]=1; if (t($6) != pr[k]) print "line " FNR ": " k ": priority " t($6) ", the matrix says " pr[k] }
+      }
+      END { for (k in pr) if (!(k in seen)) print "automation-matrix task has no Assessed-workflow row: " k }' "$WORK"
+    check W-07 "every Assessed-workflow row names an automation-matrix task with that task's exact priority, and every task has a row"
+  else
+    emit SKIP W-07 "automation-feasibility-matrix.md has no table, priorities not compared"
+  fi
 fi
 
 # ================================================================ SPOT-CHECK SAMPLE (S-01)

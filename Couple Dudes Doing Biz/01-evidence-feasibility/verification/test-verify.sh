@@ -280,6 +280,20 @@ add X00; case_X00() { rm -f "$W/poc-tests.md" || return 1; EXPECT="X-00 P-00"; }
 add W05; case_W05() { # workflow-summary.md present: its checks activate and the banned wording is caught (NBSP included)
   { echo "Assessment view — not an approved v1 design (Stage B)"; echo; for h in "Current workflow" "Assessed workflow" "Where customer data lives" "Low-cost options" "Open questions"; do echo "## $h"; echo; done; printf 'The tool is not\xc2\xa0supported.\n'; } > "$W/workflow-summary.md" || return 1
   EXPECT="W-05 L-02"; }
+# The cases below edit the real workflow-summary.md (Task 11); each needs it in the drafts.
+wneed() { [ -f "$W/workflow-summary.md" ] || { fail_setup "workflow-summary.md is not in the drafts"; return 1; }; }
+add W01; case_W01() { wneed || return 1; sedi workflow-summary.md 's/Assessment view — not an approved v1 design (Stage B)/Assessment view/' || return 1; EXPECT="W-01"; }
+add W02; case_W02() { wneed || return 1; sedi workflow-summary.md 's/^## Where customer data lives/## Customer data/' || return 1; EXPECT="W-02"; }
+add W03; case_W03() { wneed || return 1; sedi workflow-summary.md '$ a\A CRM such as HubSpot would hold the customer history.' || return 1; EXPECT="W-03"; }
+add W04; case_W04() { wneed || return 1; sedi workflow-summary.md '$ a\See also E-SAGE-997.' || return 1; EXPECT="W-04"; }
+add W06; case_W06() { # a verdict that differs from the connectivity matrix
+  wneed || return 1; sedi workflow-summary.md 's/Unresolved \[Flow: tracking back to Sage\]/Viable with conditions [Flow: tracking back to Sage]/' || return 1; EXPECT="W-06"; }
+add W06b; case_W06b() { # a bracketed path label that is not in the matrix
+  wneed || return 1; sedi workflow-summary.md 's/\[Flow: email intake\]/[Flow: inbox intake]/' || return 1; EXPECT="W-06"; }
+add W07; case_W07() { # a priority that differs from the automation matrix
+  wneed || return 1; sedi workflow-summary.md '/^| Tracking retrieval and Sage update/ s/| P3 |/| P2 |/' || return 1; EXPECT="W-07"; }
+add W07b; case_W07b() { # an automation-matrix task with no Assessed-workflow row
+  wneed || return 1; sedi workflow-summary.md '/^| Inventory monitoring and supplier PO recommendation/d' || return 1; EXPECT="W-07"; }
 
 # --- script-level cases (environment, not file edits)
 mkshims() {
