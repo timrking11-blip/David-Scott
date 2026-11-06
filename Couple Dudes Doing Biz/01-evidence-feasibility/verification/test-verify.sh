@@ -22,7 +22,8 @@
 #
 # Fixture map (TEST-PLAN.md section 5): FX-01..FX-05, FX-07..FX-13, FX-16 are cases below under those names.
 #   FX-06 is the same mutation as NC13 (delete one side of a Conflicts-with pair), so it is run once, as NC13.
-#   FX-14 tests L-15 (G4), with L15-RETYPE, L15-NEW and L15-SR-EXEMPT. FX-15 (needs P-06) is reported SKIP: not built yet.
+#   FX-14 tests L-15 (G4), with L15-RETYPE, L15-NEW and L15-SR-EXEMPT. FX-15 tests P-06 (G5), with P06-NOTMET,
+#   P06-NEWRISK and P06-ACCOUNTING.
 
 V="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" || exit 2
 D="$V/../drafts"
@@ -197,7 +198,16 @@ add L15-NEW; case_L15-NEW() { # G4: a new research row with no baseline (copy of
 add L15-SR-EXEMPT; case_L15-SR-EXEMPT() { # G4: editing a stakeholder row is not a frozen-row change
   local id; id=$(pick evidence-ledger.md "${LROW}"'lc($8)=="stakeholder"'); need "stakeholder row" "$id" || return 1
   cellmod evidence-ledger.md "$id" 13 append " Reconfirm with Brad." || return 1; MODE=nofail; EXPECT="L-15"; }
-add FX-15; case_FX-15() { MODE=skip; EXPECT="P-06 (live-system and cost gates) is not built yet"; }
+add FX-15; case_FX-15() { # G5: delete both cost-gate sentences from POC-06; its "Gate not met" line stays
+  sedi poc-tests.md '/^## POC-06 — /,/^## POC-07 — /{s/ Cost gate: [^.]*\.//}' || return 1
+  grep -q '^- Gate not met' "$W/poc-tests.md" || { fail_setup "Gate not met line vanished"; return 1; }
+  EXPECT="P-06"; }
+add P06-NOTMET; case_P06-NOTMET() { # G5: POC-04 keeps its gate but loses its "Gate not met" fail criterion
+  sedi poc-tests.md '/^## POC-04 — /,/^## POC-05 — /{/^- Gate not met/d}' || return 1; EXPECT="P-06"; }
+add P06-NEWRISK; case_P06-NEWRISK() { # G5: an ungated live-account step appears in POC-01
+  sedi poc-tests.md '/^## POC-01 — /a\Run the import against Brad'"'"'s live account to confirm the result.' || return 1; EXPECT="P-06"; }
+add P06-ACCOUNTING; case_P06-ACCOUNTING() { # G5: "Brad's accounting basis" is not a live-system keyword (word boundary)
+  sedi poc-tests.md '/^## POC-01 — /a\The import must suit Brad'"'"'s accounting basis.' || return 1; MODE=nofail; EXPECT="P-06"; }
 add FX-16; case_FX-16() { # clean run with CRLF line endings must look exactly like the baseline
   local f; for f in "$W"/*.md; do cp "$f" "$W/.pre"; sed -i 's/$/\r/' "$f"; cmp -s "$W/.pre" "$f" && { fail_setup "CRLF edit did not change $f"; return 1; }; done
   MODE=same; EXPECT=""; }

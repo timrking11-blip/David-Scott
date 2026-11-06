@@ -471,6 +471,29 @@ else
     sed 's/^/    /' "$T/manual.lines"
   fi
 
+  # P-06 (G5): live-system and cost gates (Rulings 38 and 39). A PoC section that mentions live accounts, credentials,
+  # tenants, chargeable steps, endpoints or labels must carry (a) a gate statement and (b) a "gate not met" line under
+  # its Fail criteria. Keywords are word-bounded (\y in gawk), so "Brad's accounting" and "labelled" do not trigger.
+  # The "gate not met" line itself never counts as the gate statement: it names the gate but does not impose it.
+  awkto "$OFF" "$TRIM"'
+    function flush() {
+      if (h != "" && trig) {
+        if (!gate)   print h ": mentions a live-system or chargeable step (line " tl ") but has no gate statement (cost gate / account gate / Gate (Rulings ...))"
+        if (!notmet) print h ": mentions a live-system or chargeable step (line " tl ") but has no \"gate not met\" line under Fail criteria"
+      }
+      h=""; trig=0; gate=0; notmet=0; fc=0; tl=""
+    }
+    /^## / { flush() }
+    /^## POC-0[1-7] — / { h=$2 " " $4; next }
+    h == "" { next }
+    { l=tolower(n($0)) }
+    /^[*_ ]*Fail criteria/ { fc=1 }
+    l ~ /live account|\ybrad['\''’]s (credentials|account)\y|production tenant|\ycharge|\yfees?\y|billable|\yendpoints?\y|\ycredentials\y|\ylabels?\y/ { trig=1; if (tl=="") tl=FNR }
+    l ~ /gate not met/ { if (fc) notmet=1; next }
+    l ~ /cost gate|account gate|gate \(rulings/ { gate=1 }
+    END { flush() }' "$POC"
+  check P-06 "every PoC section with a live-system or chargeable step has a gate statement and a \"gate not met\" fail criterion (G5)"
+
   cited_check P-07 "$POC"
 fi
 
