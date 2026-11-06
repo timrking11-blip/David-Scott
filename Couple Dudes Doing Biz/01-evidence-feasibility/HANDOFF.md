@@ -1,6 +1,6 @@
 # Handoff: Couple Dudes Doing Biz, sub-project 1 (evidence and feasibility)
 
-Last updated 2026-11-06 (cloud session, after G4). Read this first when you resume, whether in a new session or yourself.
+Last updated 2026-11-06 (cloud session, after Task 11 and G1, G4, G5, G6, G12). Read this first when you resume, whether in a new session or yourself.
 
 ## What this is
 
@@ -41,9 +41,9 @@ Authority documents:
 | 6: connectivity matrix | Done and reviewed. Amended for DEC-09 to DEC-11 and for the quote narrowing. |
 | 7: automation matrix | Done and reviewed. Amended likewise. |
 | 8: vendor questions, PoC tests, findings summary | Done and reviewed. 2 fix rounds, plus the live-system and cost gates (Rulings 38 and 39). |
-| 9: verification | **In progress.** See Verification below. |
+| 9: verification | **Scripted part done** (0 FAIL, 0 BAD, every check has a fixture). Manual checklist reviewed, **awaiting Timothy's sign-off**: `verification/manual-checklist-review-2026-11-06.md`. |
 | 10: present to Timothy, promote files on his go | Not started |
-| 11: CRM-free workflow summary (DEC-07) | **Not built.** Requirements are in the plan's Task 11. Checks W-* run once the file exists. |
+| 11: CRM-free workflow summary (DEC-07) | **Built** (`drafts/workflow-summary.md`, Ruling 53). W-01 to W-07 PASS. |
 
 ## Key decisions from Timothy (spec §3 and §15)
 
@@ -84,11 +84,11 @@ Authority documents:
   - Quote amendment: 7 of 7 addressed, plus a round-2 cleanup.
 - **Still open before the work counts as "clean"** (TEST-PLAN §2):
   - ~~G4~~ **built** (Ruling 52): check L-15. Any edit to a research row now FAILs until it is re-baselined under a ruling.
-  - **G5:** gate presence check (P-06).
-  - **G6:** summary consistent with the matrices (F-05).
-  - **G1** (L-16), **G11** (claim drifts away from its citation; an `--impact` report), **G12** (C-11) and **G13**, which was resolved by Ruling 46.
+  - ~~G5~~ **built** (Ruling 54): check P-06.
+  - ~~G6~~ **built**: check F-05.
+  - ~~G1~~ (L-16) and ~~G12~~ (C-11) **built** (Ruling 55). Still open: **G11** (claim drifts away from its citation; an `--impact` report), plus G2, G3, G7 and G9 from TEST-PLAN §7. G13 was resolved by Ruling 46.
   - Fixtures FX-14 and FX-15 activate once L-15 and P-06 exist.
-  - The manual checklist (TEST-PLAN §6) has not been signed off.
+  - The manual checklist (TEST-PLAN §6) is **reviewed but not signed off**. Four items pass. Item 1 passes with one follow-up (E-AI-028's context qualifier). Items 2 and 3 need Timothy's call. See `verification/manual-checklist-review-2026-11-06.md`.
 
 ## Open questions (they need Brad or a vendor; draft questions are in vendor-questions.md)
 
@@ -103,8 +103,8 @@ Authority documents:
 
 1. ~~Read the final totals and confirm 0 FAIL, 0 BAD.~~ Done 2026-11-06 (see the bottom of this file).
 2. ~~Build G4 (L-15).~~ Done 2026-11-06 (Ruling 52). From now on, a research-row edit needs a ruling and `baseline-research-rows.sh` in the same commit.
-3. Build Task 11 (`workflow-summary.md`), then re-run verify.sh so the W-* checks run.
-4. Build G5, G6, G1 and G12. Sign off the manual checklist.
+3. ~~Build Task 11.~~ Done 2026-11-06 (Ruling 53).
+4. ~~Build G5, G6, G1 and G12.~~ Done 2026-11-06 (Rulings 54 and 55). **Timothy:** sign off the manual checklist, or decide items 2 and 3 in `verification/manual-checklist-review-2026-11-06.md`.
 5. Task 10: present the drafts to Timothy. Promote them to this folder only on his explicit go.
 6. Timothy sends the vendor and Brad questions himself. Log the answers as new ledger rows.
 
@@ -121,5 +121,6 @@ Authority documents:
 |---|---|---|---|
 | After the Ruling 51 scope fix | Timothy's PC, and again in the cloud session | 55 PASS, 0 FAIL, 1 SKIP, 2 INFO | 82 OK, 0 BAD, 2 SKIP (FX-14, FX-15) |
 | After G4 (Ruling 52) | Cloud session | 56 PASS, 0 FAIL, 1 SKIP, 2 INFO | 86 OK, 0 BAD, 1 SKIP (FX-15 waits for P-06) |
+| After Task 11, G1, G5, G6, G12 (Rulings 53 to 55) | Cloud session | 67 PASS, 0 FAIL, 0 SKIP, 3 INFO | 109 OK, 0 BAD, 0 SKIP |
 
-The verify.sh SKIP is W-* (Task 11 is not built yet). The INFO lines are the P-05 manual-review list and the S-01 spot-check sample. Reproduce the sample with `SEED=handoff-2026-11-06 bash verify.sh`.
+Since Task 11, verify.sh has no SKIP. The INFO lines are L-16sr (three stakeholder rows with no Validation needed entry, Ruling 55), the P-05 manual-review list and the S-01 spot-check sample. Reproduce the sample with `SEED=handoff-2026-11-06 bash verify.sh`.

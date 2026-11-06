@@ -4,7 +4,7 @@
 
 **Authority:** spec §6, §7, §11, §12 and §15, the rulings in the controller ledger, and the plan's Step 1 checks.
 
-**Status at 2026-11-06, after G4 (Ruling 52):** `verify.sh` reports 56 PASS, 0 FAIL, 1 SKIP, 2 INFO, exit 0. The SKIP is W-* (Task 11 is not built yet). `test-verify.sh` full run: 86 OK, 0 BAD, 1 SKIP (FX-15 waits for P-06). The spot-check and the code review of `verify.sh` are done. Still open for "clean" (§2): G5, G6, G1, G12, and the manual checklist (§6).
+**Status at 2026-11-06, after Task 11 and G1, G4, G5, G6, G12 (Rulings 52 to 55):** `verify.sh` reports 67 PASS, 0 FAIL, 0 SKIP, 3 INFO, exit 0. `test-verify.sh` full run: 109 OK, 0 BAD, 0 SKIP; every check has a fixture. Clean (§2) items 1 to 3 hold. Items 4 to 6 (spot-check, P-05 lines, manual checklist) are reviewed in `manual-checklist-review-2026-11-06.md` and await Timothy's sign-off.
 
 Revised 2026-11-06 after L2 audit (test-plan-audit.md).
 
@@ -125,6 +125,6 @@ This is build order, not the risk order of §4. G8 comes second because it guard
 
 1. Finish the check S-01 spot-check and the `verify.sh` review. **Done 2026-11-06.**
 2. **Done 2026-11-06 (G4 under Ruling 52; G8 is `test-verify.sh`).** Build **G4** (frozen-row baseline) and **G8** (`test-verify.sh` covering fixtures FX-01 to FX-13 and FX-16, which needs no new check) **before** anyone, Copilot included, edits the drafts.
-3. Add G5, G6 and G1, then G12, G13, G2, G3, G7 and G9.
-4. Build Task 11. W-* then runs automatically.
+3. **G5, G6, G1 and G12 done 2026-11-06; G13 resolved by Ruling 46.** Still open: G2, G3, G7, G9 and G11. Add G5, G6 and G1, then G12, G13, G2, G3, G7 and G9.
+4. **Done 2026-11-06 (Ruling 53).** Build Task 11. W-* then runs automatically.
 5. Re-run everything. Clean is defined in §2.
