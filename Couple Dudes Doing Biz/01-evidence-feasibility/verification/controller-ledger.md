@@ -332,3 +332,4 @@ Workspace: this draft folder (no git repo). Briefs in briefs/, reports in report
   - G11 is `verify.sh --impact`, a read-only report with no PASS or FAIL. `baseline-research-rows.sh` now prints it for every changed or removed research row, so a ruling that edits a row always produces its re-review list.
   - G3 and G9 were already covered by existing behaviour and fixtures.
   - Cost if wrong: A-09 can miss a loose pairing such as "SAGE-CSV is, in our view, Recommended"; F-05, W-06 and manual review remain the backstop.
+- Final full run after Ruling 56: verify.sh 69 PASS / 0 FAIL / 0 SKIP / 3 INFO; test-verify.sh 114 OK / 0 BAD / 0 SKIP. Sub-project 1's scripted verification is complete. Open items are Timothy's: checklist sign-off (items 2 and 3), the E-AI-028 follow-up, Validation needed for the three SR rows, the new reorder question, then Task 10.

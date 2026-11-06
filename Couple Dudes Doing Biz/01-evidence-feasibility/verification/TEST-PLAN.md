@@ -4,7 +4,7 @@
 
 **Authority:** spec §6, §7, §11, §12 and §15, the rulings in the controller ledger, and the plan's Step 1 checks.
 
-**Status at 2026-11-06, after Task 11 and G1, G4, G5, G6, G12 (Rulings 52 to 55):** `verify.sh` reports 67 PASS, 0 FAIL, 0 SKIP, 3 INFO, exit 0. `test-verify.sh` full run: 109 OK, 0 BAD, 0 SKIP; every check has a fixture. Clean (§2) items 1 to 3 hold. Items 4 to 6 (spot-check, P-05 lines, manual checklist) are reviewed in `manual-checklist-review-2026-11-06.md` and await Timothy's sign-off.
+**Status at 2026-11-06, after Task 11 and G1, G4, G5, G6, G12 (Rulings 52 to 55):** `verify.sh` reports 69 PASS, 0 FAIL, 0 SKIP, 3 INFO, exit 0 (after G2, G7 and G11, Ruling 56). `test-verify.sh` full run: 114 OK, 0 BAD, 0 SKIP; every check has a fixture. Clean (§2) items 1 to 3 hold. Items 4 to 6 (spot-check, P-05 lines, manual checklist) are reviewed in `manual-checklist-review-2026-11-06.md` and await Timothy's sign-off.
 
 Revised 2026-11-06 after L2 audit (test-plan-audit.md).
 

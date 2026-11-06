@@ -124,5 +124,6 @@ Authority documents:
 | After the Ruling 51 scope fix | Timothy's PC, and again in the cloud session | 55 PASS, 0 FAIL, 1 SKIP, 2 INFO | 82 OK, 0 BAD, 2 SKIP (FX-14, FX-15) |
 | After G4 (Ruling 52) | Cloud session | 56 PASS, 0 FAIL, 1 SKIP, 2 INFO | 86 OK, 0 BAD, 1 SKIP (FX-15 waits for P-06) |
 | After Task 11, G1, G5, G6, G12 (Rulings 53 to 55) | Cloud session | 67 PASS, 0 FAIL, 0 SKIP, 3 INFO | 109 OK, 0 BAD, 0 SKIP |
+| After G2, G7, G11 (Ruling 56): all TEST-PLAN gaps closed | Cloud session | 69 PASS, 0 FAIL, 0 SKIP, 3 INFO | 114 OK, 0 BAD, 0 SKIP |
 
 Since Task 11, verify.sh has no SKIP. The INFO lines are L-16sr (three stakeholder rows with no Validation needed entry, Ruling 55), the P-05 manual-review list and the S-01 spot-check sample. Reproduce the sample with `SEED=handoff-2026-11-06 bash verify.sh`.
