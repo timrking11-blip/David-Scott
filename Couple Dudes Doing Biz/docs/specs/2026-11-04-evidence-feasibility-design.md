@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Client | Couple Dudes Doing Biz (stakeholder: Brad) |
+| Client | David Scott Company (stakeholder: Brad) |
 | Advisor | Timothy King |
 | Engagement | Inventory, Order, and Shipping Modernization, Stage A |
 | Spec date | 2026-11-04 |
@@ -288,7 +288,7 @@ Location: `Couple Dudes Doing Biz/01-evidence-feasibility/`.
 ## 14. Open questions (non-blocking)
 
 1. Does Timothy have a transcript or notes from the tl;dv meeting? If so, they are added as stakeholder-reported inputs.
-2. Is "Couple Dudes Doing Biz" the client's real business name and fine to use in client-facing deliverables? (Assumed yes.)
+2. Is "David Scott Company" the client's real business name and fine to use in client-facing deliverables? (Assumed yes.)
 3. Can Brad share a screenshot of Sage's Help, About screen? It would resolve A-01 at once.
 
 ## 15. Amendments

@@ -14,7 +14,7 @@ The table above is the automation feasibility matrix.
 
 # Automation feasibility matrix and reorder rule
 
-Sub-project 1, evidence and feasibility research. Client: Couple Dudes Doing Biz (stakeholder: Brad). Advisor: Timothy King. Date: 2026-11-05, amended 2026-11-06 for DEC-09 to DEC-11 in the cells they touch. Status: draft, built from `evidence-ledger.md` and `connectivity-matrix.md` only, following spec sections 7.2, 8 and 15 (DEC-06 to DEC-08). Assessment view, not an approved v1 design.
+Sub-project 1, evidence and feasibility research. Client: David Scott Company (stakeholder: Brad). Advisor: Timothy King. Date: 2026-11-05, amended 2026-11-06 for DEC-09 to DEC-11 in the cells they touch. Status: draft, built from `evidence-ledger.md` and `connectivity-matrix.md` only, following spec sections 7.2, 8 and 15 (DEC-06 to DEC-08). Assessment view, not an approved v1 design.
 
 ## How to read this matrix
 

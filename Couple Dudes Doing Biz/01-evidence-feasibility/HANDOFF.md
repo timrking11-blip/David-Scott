@@ -1,4 +1,4 @@
-# Handoff: Couple Dudes Doing Biz, sub-project 1 (evidence and feasibility)
+# Handoff: David Scott Company, sub-project 1 (evidence and feasibility)
 
 Last updated 2026-11-06 (cloud session, after Task 11 and G1, G4, G5, G6, G12). Read this first when you resume, whether in a new session or yourself.
 

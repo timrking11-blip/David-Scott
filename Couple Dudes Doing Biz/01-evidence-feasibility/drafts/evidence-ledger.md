@@ -1,6 +1,6 @@
 # Evidence ledger
 
-Sub-project 1, evidence and feasibility research. Client: Couple Dudes Doing Biz (stakeholder: Brad). Advisor: Timothy King. Ledger date: 2026-11-04. Status: draft, merged from the five reviewed research domains. Schema, strength scale and rules follow spec section 6 of `docs/specs/2026-11-04-evidence-feasibility-design.md`.
+Sub-project 1, evidence and feasibility research. Client: David Scott Company (stakeholder: Brad). Advisor: Timothy King. Ledger date: 2026-11-04. Status: draft, merged from the five reviewed research domains. Schema, strength scale and rules follow spec section 6 of `docs/specs/2026-11-04-evidence-feasibility-design.md`.
 
 Later deliverables cite IDs from this file only. Rows are sorted by ID.
 

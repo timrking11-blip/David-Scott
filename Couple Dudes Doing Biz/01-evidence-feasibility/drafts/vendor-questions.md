@@ -1,6 +1,6 @@
 # Vendor questions and client confirmations
 
-Sub-project 1, evidence and feasibility research. Client: Couple Dudes Doing Biz (stakeholder: Brad). Advisor: Timothy King. Date: 2026-11-06. Status: draft for review.
+Sub-project 1, evidence and feasibility research. Client: David Scott Company (stakeholder: Brad). Advisor: Timothy King. Date: 2026-11-06. Status: draft for review.
 
 Every question below is a draft for Timothy to send, in his own words and through his own channels. None has been sent and none has an answer. Each question cites the ledger rows (from `evidence-ledger.md`, column "Validation needed") that its answer would resolve. A reply from a vendor sales or support contact is a vendor statement; it does not by itself move a row to verified until the reply is written down and dated in the ledger. Assumptions: A-01 (US Sage 50 Accounting; Quantum 2026 by stakeholder report, E-SAGE-053; exact release unknown) applies to every Sage question; A-02 and A-02b (the two readings of "GrokBot super") apply to the xAI questions.
 

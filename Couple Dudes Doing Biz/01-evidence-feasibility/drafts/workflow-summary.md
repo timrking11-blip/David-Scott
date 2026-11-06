@@ -2,7 +2,7 @@
 
 Assessment view — not an approved v1 design (Stage B)
 
-Sub-project 1, evidence and feasibility. Client: Couple Dudes Doing Biz (stakeholder: Brad). Advisor: Timothy King. Draft of 2026-11-06, written under plan Task 11. Status: draft; it is promoted only on Timothy's go (plan Task 10).
+Sub-project 1, evidence and feasibility. Client: David Scott Company (stakeholder: Brad). Advisor: Timothy King. Draft of 2026-11-06, written under plan Task 11. Status: draft; it is promoted only on Timothy's go (plan Task 10).
 
 What this is: one page that follows an order from the inbox to the tracking number, first as it runs today and then with the best-rated option for each step, using only the evidence ledger and the two matrices. It recommends no CRM: the stakeholder sees no need for one (DEC-06; E-ECOM-015). Every connectivity verdict and feasibility priority below is copied from `connectivity-matrix.md` and `automation-feasibility-matrix.md`; if the two disagree with this page, the matrices win.
 

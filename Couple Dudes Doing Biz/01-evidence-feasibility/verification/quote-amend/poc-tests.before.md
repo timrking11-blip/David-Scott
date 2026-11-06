@@ -1,6 +1,6 @@
 # Proof-of-concept tests
 
-Sub-project 1, evidence and feasibility research. Client: Couple Dudes Doing Biz (stakeholder: Brad). Advisor: Timothy King. Date: 2026-11-06. Status: draft for review. Assessment view, not an approved v1 design.
+Sub-project 1, evidence and feasibility research. Client: David Scott Company (stakeholder: Brad). Advisor: Timothy King. Date: 2026-11-06. Status: draft for review. Assessment view, not an approved v1 design.
 
 Built from `connectivity-matrix.md` and `evidence-ledger.md` only. Nothing here has been run. The test names are frozen: SAGE-CSV, SAGE-SDK, SAGE-ODBC, SHIP-PORTAL, SHIP-MULTI, MAIL-INTAKE and SAGE-TRACKING.
 

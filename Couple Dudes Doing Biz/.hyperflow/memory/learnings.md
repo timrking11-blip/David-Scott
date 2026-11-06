@@ -1,4 +1,4 @@
-# Hyperflow learnings — Couple Dudes Doing Biz
+# Hyperflow learnings — David Scott Company
 
 ## 2026-11-06: audit of the evidence-package verification kit (L2 scope)
 

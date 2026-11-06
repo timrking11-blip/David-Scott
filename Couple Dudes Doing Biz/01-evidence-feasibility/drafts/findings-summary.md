@@ -1,6 +1,6 @@
 # Findings summary
 
-Sub-project 1, evidence and feasibility research. Client: Couple Dudes Doing Biz (stakeholder: Brad). Advisor: Timothy King. Date: 2026-11-06. Status: draft for review. Assessment view, not an approved v1 design.
+Sub-project 1, evidence and feasibility research. Client: David Scott Company (stakeholder: Brad). Advisor: Timothy King. Date: 2026-11-06. Status: draft for review. Assessment view, not an approved v1 design.
 
 Built from `evidence-ledger.md`, `connectivity-matrix.md` and `automation-feasibility-matrix.md` only; no new research was done. Every claim cites ledger IDs. Snippet-only rows count as S4. Prices are S1 with a date, or labelled "quoted, unverified" or "estimate". Where no method was found the wording is "No supported method found in sources checked". Nothing here records a vendor contact; every question is a draft in `vendor-questions.md` and every test is a draft in `poc-tests.md`.
 
@@ -88,7 +88,7 @@ The minimal pilot option is SAGE-CSV alone, with manual intake. A person receive
 The three non-blocking questions from spec section 14, as they stand after the 2026-11-06 answers, then those found during the research. Each names the decision it blocks.
 
 1. Does Timothy have a transcript or notes from the tl;dv meeting? If so, they are added as stakeholder-reported inputs. The recording needs a sign-in and was not reviewed; no finding cites it (spec section 4). Blocks: a second account of the stakeholder-reported rows [E-SAGE-038 to E-SAGE-043; E-SAGE-053; E-MAIL-013; E-MAIL-018].
-2. Is "Couple Dudes Doing Biz" the client's real business name, and fine to use in client-facing deliverables? (Assumed yes.) Blocks: whether client-facing versions can carry the name.
+2. Is "David Scott Company" the client's real business name, and fine to use in client-facing deliverables? (Assumed yes.) Blocks: whether client-facing versions can carry the name.
 3. Can Brad share a screenshot of Sage's Help, About screen? The edition is stated by stakeholder report as Quantum Accounting 2026 [E-SAGE-053]; the screenshot would verify it and settle the exact release (2026.0 or 2026.1). Blocks: the CSV template check [E-SAGE-017; E-SAGE-023] and the SDK build check, since the S1 SDK pages cover release 2026.0 [E-SAGE-018; E-SAGE-019].
 4. What does "cloud version" mean for Brad's Sage 50 Quantum 2026: installed on a company Windows machine or server, or hosted by a third party, and which machine holds the company file (B-19; E-SAGE-053)? Blocks: where a Sage-facing component can run, and whether the SDK and ODBC paths are open at all [E-SAGE-029; E-SAGE-031; E-SAGE-045].
 5. Which exact release is installed (2026.0 or 2026.1), and are the Sales Orders window and the quote and sales-order CSV templates present for Quantum [E-SAGE-017; E-SAGE-018; E-SAGE-023]? Blocks: the Recommended for PoC verdict for Sage: CSV import/export and the SDK build match [E-SAGE-019].
